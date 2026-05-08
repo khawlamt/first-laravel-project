@@ -1,183 +1,52 @@
-<?php $__env->startSection('title', 'Mes Tâches'); ?>
-
 <?php $__env->startSection('content'); ?>
-<style>
-    .tasks-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #e9ecef;
-    }
+<div class="container" style="max-width: 700px; margin: 0 auto; padding: 2rem;">
 
-    .tasks-header h1 {
-        font-size: 2rem;
-        color: #2c3e50;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .task-count {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-        font-size: 1rem;
-        font-weight: normal;
-    }
-
-    .btn-new-task {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: transform 0.2s, box-shadow 0.2s;
-        display: inline-block;
-    }
-
-    .btn-new-task:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-
-    .task-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-        border-left: 4px solid #dee2e6;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .task-card:hover {
-        transform: translateX(5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .task-card.completed {
-        border-left-color: #28a745;
-        background: #f8fff9;
-    }
-
-    .task-title {
-        font-size: 1.25rem;
-        margin-bottom: 0.75rem;
-        color: #2c3e50;
-        font-weight: 600;
-    }
-
-    .task-title.completed {
-        text-decoration: line-through;
-        color: #6c757d;
-    }
-
-    .task-description {
-        color: #6c757d;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-
-    .task-actions {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-    }
-
-    .btn-edit {
-        background: #ffc107;
-        color: #856404;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .btn-edit:hover {
-        background: #e0a800;
-        color: #856404;
-    }
-
-    .btn-delete {
-        background: #dc3545;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .btn-delete:hover {
-        background: #c82333;
-        transform: scale(1.05);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 3rem;
-        background: #f8f9fa;
-        border-radius: 12px;
-        color: #6c757d;
-    }
-
-    .empty-state a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .empty-state a:hover {
-        text-decoration: underline;
-    }
-</style>
-
-<div class="container">
-    <div class="tasks-header">
-        <h1>
-            Mes Tâches
-            <span class="task-count"><?php echo e($tasks->count()); ?></span>
-        </h1>
-        <a href="<?php echo e(route('tasks.create')); ?>" class="btn-new-task">+ Nouvelle Tâche</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📋 Mes Tâches</h2>
+        <a href="<?php echo e(route('tasks.create')); ?>" class="btn btn-primary">+ Nouvelle tâche</a>
     </div>
+
+    <?php if(session('success')): ?>
+        <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+    <?php endif; ?>
 
     <?php $__empty_1 = true; $__currentLoopData = $tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-    <div class="task-card <?php echo e($task->completed ? 'completed' : ''); ?>">
-        <div class="task-title <?php echo e($task->completed ? 'completed' : ''); ?>">
-            <?php echo e($task->title); ?>
+        <div class="card mb-2">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h5 class="<?php echo e($task->completed ? 'text-decoration-line-through text-muted' : ''); ?>">
+                        <?php echo e($task->title); ?>
 
-        </div>
-        <?php if($task->description): ?>
-        <div class="task-description">
-            <?php echo e($task->description); ?>
+                    </h5>
+                    <p class="text-muted mb-0"><?php echo e($task->description); ?></p>
+                </div>
+                <div class="d-flex gap-2 align-items-start">
 
+                    
+                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('update', $task)): ?>
+                        <a href="<?php echo e(route('tasks.edit', $task)); ?>"
+                           class="btn btn-sm btn-outline-primary">Modifier</a>
+                    <?php endif; ?>
+
+                    
+                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete', $task)): ?>
+                        <form action="<?php echo e(route('tasks.destroy', $task)); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
+                            <button class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Supprimer ?')">
+                                Supprimer
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
+                </div>
+            </div>
         </div>
-        <?php endif; ?>
-        <div class="task-actions">
-            <a href="<?php echo e(route('tasks.edit', $task)); ?>" class="btn-edit">✏️ Modifier</a>
-            <form action="<?php echo e(route('tasks.destroy', $task)); ?>" method="POST" style="display: inline;">
-                <?php echo csrf_field(); ?>
-                <?php echo method_field('DELETE'); ?>
-                <button type="submit" class="btn-delete" onclick="return confirm('Supprimer cette tâche ?')">🗑️ Supprimer</button>
-            </form>
-        </div>
-    </div>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-    <div class="empty-state">
-        <p>Aucune tâche pour le moment.</p>
-        <a href="<?php echo e(route('tasks.create')); ?>">✨ Créer votre première tâche</a>
-    </div>
+        <p>Aucune tâche. <a href="<?php echo e(route('tasks.create')); ?>">Créer votre première tâche</a></p>
     <?php endif; ?>
+
 </div>
 <?php $__env->stopSection(); ?>
 

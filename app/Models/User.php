@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+public function tasks()
+{
+return $this->hasMany(Task::class);
+// Cherche automatiquement la colonne user_id dans tasks
+}
 }

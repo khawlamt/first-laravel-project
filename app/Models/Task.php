@@ -14,5 +14,11 @@ class Task extends Model
         'title',
         'description',
         'completed',
+        'user_id',  // Ajouter user_id
     ];
+    public function user()
+    {
+    return $this->belongsTo(User::class);
+    // Cherche automatiquement user_id dans la table actuelle
+    }
 }

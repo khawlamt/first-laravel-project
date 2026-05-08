@@ -8,16 +8,17 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Afficher les tâches
      */
     public function index()
     {
-         $tasks = Task::latest()->get();
-         return view('tasks.index', compact('tasks'));
+        $tasks = auth()->user()->tasks()->latest()->get();
+
+        return view('tasks.index', compact('tasks'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Formulaire création
      */
     public function create()
     {
@@ -25,29 +26,35 @@ class TaskController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistrer une tâche
      */
     public function store(Request $request)
     {
-         $request->validate([
-                    'title'       => 'required|min:3|max:255',
-                    'description' => 'nullable|max:1000',
-                ]);
-                Task::create($request->only(['title', 'description']));
-                return redirect()->route('tasks.index')
-                                 ->with('success', 'Tâche créée !');
+        $request->validate([
+            'title' => 'required|min:3|max:255',
+            'description' => 'nullable|max:1000',
+        ]);
+
+        auth()->user()->tasks()->create([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Tache creee !');
     }
 
     /**
-     * Display the specified resource.
+     * Afficher une tâche
      */
     public function show(Task $task)
     {
-        //
+        return view('tasks.show', compact('task'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Formulaire modification
      */
     public function edit(Task $task)
     {
@@ -55,27 +62,35 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Modifier tâche
      */
     public function update(Request $request, Task $task)
     {
-         $request->validate(['title' => 'required|min:3|max:255']);
-                $task->update([
-                    'title'       => $request->title,
-                    'description' => $request->description,
-                    'completed'   => $request->has('completed'),
-                ]);
-                return redirect()->route('tasks.index')
-                                 ->with('success', 'Tâche modifiée !');
+        $request->validate([
+            'title' => 'required|min:3|max:255',
+            'description' => 'nullable|max:1000',
+        ]);
+
+        $task->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'completed' => $request->has('completed'),
+        ]);
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Tache modifiee !');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprimer tâche
      */
     public function destroy(Task $task)
     {
-         $task->delete();
-                return redirect()->route('tasks.index')
-                                 ->with('success', 'Tâche supprimée !');
+        $task->delete();
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Tache supprimee !');
     }
 }
