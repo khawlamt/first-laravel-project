@@ -1,28 +1,56 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// ✅ Racine : redirige vers tasks.index
-// Si non connecté → Laravel redirige automatiquement vers /login (grâce au middleware auth)
-Route::get('/', fn() => redirect()->route('tasks.index'));
+$profileRoute = '/profile';
 
-// ✅ Routes tasks — protégées par auth (UN SEUL groupe)
-Route::middleware(['auth'])->group(function () {
-    Route::resource('tasks', TaskController::class);
-});
+Route::get('/', function () {
+    return Auth::check()
+        ? redirect()->route('tasks.index')
+        : redirect()->route('login');
+})->name('home');
 
-// ✅ Dashboard
+Route::get('/about', [PageController::class, 'about'])->name('about');
+
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+
+Route::get('/services', [PageController::class, 'services'])->name('services');
+
+Route::get('/produit', [PageController::class, 'produit'])->name('produit');
+
+Route::get('/blog', [PageController::class, 'blog'])->name('blog');
+
+Route::get('/blog/{id}', [PageController::class, 'article'])
+    ->whereNumber('id')
+    ->name('blog.article');
+
+Route::get('/equipe/{membre?}', [PageController::class, 'equipe'])
+    ->where('membre', '[A-Za-z]+')
+    ->name('equipe');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// ✅ Profile
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::middleware('auth')->group(function () use ($profileRoute) {
+
+    Route::resource('tasks', TaskController::class)
+        ->except(['show']);
+
+    Route::get($profileRoute, [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch($profileRoute, [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete($profileRoute, [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+
+

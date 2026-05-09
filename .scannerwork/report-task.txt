@@ -3,5 +3,5 @@ projectKey=khawlamt_first-laravel-project
 serverUrl=https://sonarcloud.io
 serverVersion=8.0.0.86952
 dashboardUrl=https://sonarcloud.io/dashboard?id=khawlamt_first-laravel-project
-ceTaskId=AZ4L03OKieERAlS2tEcY
-ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZ4L03OKieERAlS2tEcY
+ceTaskId=AZ4L5L9I5ntoHWzxGoFP
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZ4L5L9I5ntoHWzxGoFP
